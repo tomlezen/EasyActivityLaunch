@@ -1,0 +1,17 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation files("${System.properties['java.home']}/../lib/tools.jar")
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.squareup:kotlinpoet:$kotlinpoet_version"
+    implementation "com.google.auto:auto-common:$auto_common_version"
+    implementation "com.google.auto.service:auto-service:$auto_service_version"
+    implementation 'com.google.guava:guava:26.0-jre'
+    implementation project(':lib')
+    compileOnly 'com.google.android:android:4.1.1.4'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"

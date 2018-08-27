@@ -1,0 +1,30 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext.kotlin_version = '1.2.60'
+    ext.kotlinpoet_version = '1.0.0-RC1'
+    ext.auto_service_version = '1.0-rc2'
+    ext.auto_common_version = '0.10'
+    repositories {
+        google()
+        jcenter(){ url 'http://jcenter.bintray.com/'}
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter(){ url 'http://jcenter.bintray.com/'}
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
