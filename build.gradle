@@ -12,13 +12,37 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
+        classpath "com.novoda:bintray-release:0.5.0"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+    }
+
+    tasks.withType(Javadoc) {
+        failOnError false
+        options{
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            links "http://docs.oracle.com/javase/7/docs/api"
+        }
     }
 }
 
 allprojects {
+    ext{
+        repoName = "util"
+        groupId = "com.tlz.easyactivitylaunch"
+        artifactId = "easyactivitylaunch"
+        artifactCompilerId = "easyactivitylaunch-processor"
+        uploadName = "easyactivitylaunch"
+        uploadCompilerName = "easyactivitylaunch-processor"
+        packaging = "aar"
+        desc = ""
+        website = "https://github.com/tomlezen/EasyActivityLaunch"
+        gitUrl = "https://github.com/tomlezen/EasyActivityLaunch"
+        publishVersion = "0.0.1"
+        autoPublish = true
+    }
+
     repositories {
         google()
         jcenter(){ url 'http://jcenter.bintray.com/'}
