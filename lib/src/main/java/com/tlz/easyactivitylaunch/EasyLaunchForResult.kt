@@ -20,4 +20,5 @@ annotation class EasyLaunchForResult(
     val nickName: String = "",
     val parameters: Array<KClass<out Any>> = [],
     val parameterNames: Array<String> = [],
+    val flags: IntArray = [],
     val fragmentSupport: Boolean = false)

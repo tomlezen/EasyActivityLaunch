@@ -12,6 +12,7 @@ import kotlin.reflect.KClass
  * @param nickName 别名.
  * @param parameters 参数.
  * @param parameterNames 参数名.
+ * @param flags 标记.
  * @param fragmentSupport 是否支持Fragment.
  */
 @Retention(AnnotationRetention.RUNTIME)
@@ -20,5 +21,6 @@ annotation class EasyLaunch(
     val nickName: String = "",
     val parameters: Array<KClass<out Any>> = [],
     val parameterNames: Array<String> = [],
+    val flags: IntArray = [],
     val fragmentSupport: Boolean = false
-    )
+)

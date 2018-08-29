@@ -44,11 +44,7 @@ class InitializerGenerator(private val builder: FileSpec.Builder, private val me
     // 遍历所有的注解，并检车注解的class是否是继承于Activity
     model.elementsByAnnotation.forEach {
       val (clazz, element) = it
-      if (clazz.canonicalName == EasyLaunchForResult::class.java.canonicalName) {
-        functions.addAll(createLaunchForResultFunctions(clazz, element))
-      } else {
-        functions.addAll(createLaunchFunctions(clazz, element))
-      }
+      functions.addAll(createLaunchFunctions(clazz, element))
     }
     return functions
   }
@@ -60,60 +56,21 @@ class InitializerGenerator(private val builder: FileSpec.Builder, private val me
    * @return List<FunSpec>
    */
   private fun createLaunchFunctions(clazz: Class<out Any>, element: Element): List<FunSpec> {
-    val (nickName, fragmentSupport) = when (clazz) {
-      EasyLaunch::class.java -> {
-        val annotation = element.getAnnotation(EasyLaunch::class.java)
-        annotation.nickName to annotation.fragmentSupport
-      }
-      EasyLaunch1::class.java -> {
-        val annotation = element.getAnnotation(EasyLaunch1::class.java)
-        annotation.nickName to annotation.fragmentSupport
-      }
-      EasyLaunch2::class.java -> {
-        val annotation = element.getAnnotation(EasyLaunch2::class.java)
-        annotation.nickName to annotation.fragmentSupport
-      }
-      else -> "" to false
-    }
+    val typeElement = element as TypeElement
+    val (nickName, fragmentSupport) = Pair(
+        typeElement.getAnnotationMirror(clazz)?.getAnnotationValue("nickName")?.value as? String
+            ?: "",
+        typeElement.getAnnotationMirror(clazz)?.getAnnotationValue("fragmentSupport")?.value as? Boolean
+            ?: false
+    )
     val actName = if (nickName.isEmpty()) element.asType().toString().split(".").last() else nickName.firstUpperCase()
-    val actFuncBuilder = FunSpec.builder("launch$actName").receiver(Activity::class)
+    val actFuncBuilder = FunSpec.builder(if (clazz == EasyLaunchForResult::class.java) "launch${actName}ForResult" else "launch$actName").receiver(Activity::class)
     val frgFuncBuilder = if (fragmentSupport) FunSpec.builder("launch$actName").receiver(Fragment::class) else null
     getKDocCodeBlock(actName).apply {
       actFuncBuilder.addKdoc(this)
       frgFuncBuilder?.addKdoc(this)
     }
-    createParametersAndBody(clazz, element as TypeElement).apply {
-      actFuncBuilder.addParameters(first)
-      actFuncBuilder.addCode(second)
-    }
-    return mutableListOf(actFuncBuilder.build()).apply {
-      frgFuncBuilder?.let {
-        createParametersAndBody(clazz, element, true).apply {
-          it.addParameters(first)
-          it.addCode(second)
-        }
-        add(it.build())
-      }
-    }
-  }
-
-  /**
-   * 创建启动方法.
-   * @param clazz Class<out Any>
-   * @param element Element
-   * @return FunSpec
-   */
-  private fun createLaunchForResultFunctions(clazz: Class<out Any>, element: Element): List<FunSpec> {
-    val annotation = element.getAnnotation(EasyLaunchForResult::class.java)
-    val fragmentSupport = annotation.fragmentSupport
-    val actName = if (annotation.nickName.isEmpty()) element.asType().toString().split(".").last() else annotation.nickName
-    val actFuncBuilder = FunSpec.builder("launch${actName}ForResult").receiver(Activity::class)
-    val frgFuncBuilder = if (fragmentSupport) FunSpec.builder("launch${actName}ForResult").receiver(Fragment::class) else null
-    getKDocCodeBlock(actName).apply {
-      actFuncBuilder.addKdoc(this)
-      frgFuncBuilder?.addKdoc(this)
-    }
-    createParametersAndBody(clazz, element as TypeElement).apply {
+    createParametersAndBody(clazz, typeElement).apply {
       actFuncBuilder.addParameters(first)
       actFuncBuilder.addCode(second)
     }
@@ -152,6 +109,17 @@ class InitializerGenerator(private val builder: FileSpec.Builder, private val me
       } ?: listOf()
 
   /**
+   * 获取标记列表.
+   * @receiver TypeElement
+   * @param clazz Class<out Any>
+   * @return List<Int>
+   */
+  private fun TypeElement.getFlags(clazz: Class<out Any>): List<Int> =
+      (getAnnotationMirror(clazz)?.getAnnotationValue("flags") as? Attribute.Array)?.values?.mapTo(mutableListOf()) {
+        it.value as Int
+      } ?: listOf()
+
+  /**
    * 生成参数，和方法块.
    * @param element TypeElement
    * @return List<ParameterSpec>
@@ -164,21 +132,16 @@ class InitializerGenerator(private val builder: FileSpec.Builder, private val me
     } else {
       codeBlockBuilder.addStatement("val intent = %T(this.activity, %T::class.java)", Intent::class, element)
     }
-    val (parameters, parameterNames) = when (clazz) {
-      EasyLaunchForResult::class.java -> {
-        parameterSpecs.add(ParameterSpec.builder("requestCode", Int::class).build())
-        element.getParameters(EasyLaunchForResult::class.java) to element.getParameterNames(EasyLaunchForResult::class.java)
-      }
-      EasyLaunch::class.java -> {
-        element.getParameters(EasyLaunch::class.java) to element.getParameterNames(EasyLaunch::class.java)
-      }
-      EasyLaunch1::class.java -> {
-        element.getParameters(EasyLaunch1::class.java) to element.getParameterNames(EasyLaunch1::class.java)
-      }
-      EasyLaunch2::class.java -> {
-        element.getParameters(EasyLaunch2::class.java) to element.getParameterNames(EasyLaunch2::class.java)
-      }
-      else -> listOf<TypeMirror>() to listOf()
+    if (clazz == EasyLaunchForResult::class.java) {
+      parameterSpecs.add(ParameterSpec.builder("requestCode", Int::class).build())
+    }
+    val (parameters, parameterNames, flags) = Triple(
+        element.getParameters(clazz),
+        element.getParameterNames(clazz),
+        element.getFlags(clazz)
+    )
+    flags.forEach {
+      codeBlockBuilder.addStatement("intent.addFlags($it)")
     }
     if (parameterNames.isEmpty() && parameters.isNotEmpty()) {
       parameters.mapIndexedTo(parameterSpecs) { index, kClass ->

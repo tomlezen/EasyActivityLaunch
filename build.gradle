@@ -39,7 +39,7 @@ allprojects {
         desc = ""
         website = "https://github.com/tomlezen/EasyActivityLaunch"
         gitUrl = "https://github.com/tomlezen/EasyActivityLaunch"
-        publishVersion = "0.0.1"
+        publishVersion = "0.0.2"
         autoPublish = true
     }
 

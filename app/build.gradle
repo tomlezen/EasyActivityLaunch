@@ -27,8 +27,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0-rc01'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    implementation 'com.tlz.easyactivitylaunch:easyactivitylaunch:0.0.1'
-    kapt 'com.tlz.easyactivitylaunch:easyactivitylaunch-processor:0.0.1'
+    implementation 'com.tlz.easyactivitylaunch:easyactivitylaunch:0.0.2'
+    kapt 'com.tlz.easyactivitylaunch:easyactivitylaunch-processor:0.0.2'
 //    implementation project(':lib')
 //    kapt project(':compiler')
     testImplementation 'junit:junit:4.12'

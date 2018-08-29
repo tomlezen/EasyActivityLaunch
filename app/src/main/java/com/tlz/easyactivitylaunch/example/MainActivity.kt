@@ -7,50 +7,53 @@ import android.os.Parcelable
 import android.support.v7.app.AppCompatActivity
 import com.tlz.easyactivitylaunch.*
 
-@EasyLaunch(parameters = [MainActivity.TestClass::class, String::class])
+@EasyLaunch(
+    parameters = [MainActivity.TestClass::class, String::class],
+    flags = [Intent.FLAG_ACTIVITY_NEW_TASK]
+)
 @EasyLaunchForResult(
-        parameters = [Int::class, Array<MainActivity.TestClass>::class],
-        fragmentSupport = true
+    parameters = [Int::class, Array<MainActivity.TestClass>::class],
+    fragmentSupport = true
 )
 @EasyLaunch1(
-        nickName = "CustomFuncName",
-        parameters = [Intent::class, Bundle::class],
-        parameterNames = ["customParam1", "customParam2"],
-        fragmentSupport = true
+    nickName = "CustomFuncName",
+    parameters = [Intent::class, Bundle::class],
+    parameterNames = ["customParam1", "customParam2"],
+    fragmentSupport = true
 )
 @EasyLaunch2(
-        parameters = [IntArray::class, Double::class],
-        fragmentSupport = true
+    parameters = [IntArray::class, Double::class],
+    fragmentSupport = true
 )
 class MainActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        launchMainActivity(TestClass(), "1")
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+    launchMainActivity(TestClass(), "1")
+  }
+
+  class TestClass() : Parcelable {
+    constructor(parcel: Parcel) : this() {
     }
 
-    class TestClass() : Parcelable {
-        constructor(parcel: Parcel) : this() {
-        }
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-
-        companion object CREATOR : Parcelable.Creator<TestClass> {
-            override fun createFromParcel(parcel: Parcel): TestClass {
-                return TestClass(parcel)
-            }
-
-            override fun newArray(size: Int): Array<TestClass?> {
-                return arrayOfNulls(size)
-            }
-        }
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
 
     }
+
+    override fun describeContents(): Int {
+      return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<TestClass> {
+      override fun createFromParcel(parcel: Parcel): TestClass {
+        return TestClass(parcel)
+      }
+
+      override fun newArray(size: Int): Array<TestClass?> {
+        return arrayOfNulls(size)
+      }
+    }
+
+  }
 }
