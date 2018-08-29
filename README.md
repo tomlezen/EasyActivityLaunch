@@ -3,8 +3,8 @@
 
 ## 依赖
 ```
-implementation 'com.tlz.easyactivitylaunch:easyactivitylaunch:0.0.1'
-kapt 'com.tlz.easyactivitylaunch:easyactivitylaunch-processor:0.0.1'
+implementation 'com.tlz.easyactivitylaunch:easyactivitylaunch:0.0.2'
+kapt 'com.tlz.easyactivitylaunch:easyactivitylaunch-processor:0.0.2'
 ```
 ## 使用
 #### 在对应的Activity添加EasyLaunch注解
@@ -19,7 +19,8 @@ class MainActivity : AppCompatActivity() {}
 nickName：生成的启动方法别名，默认为Activity名；
 parameters：启动方法需要的参数数组；
 parameterNames：参数名，如果填写该参数必须与parameters一一对应，默认名为param + 参数序号；
-fragmentSupport：Fragment扩展支持，默认为false，如果为true，会生成一个Fragment的启动扩展方法
+flags: Intent标记；
+fragmentSupport：Fragment扩展支持，默认为false，如果为true，会生成一个Fragment的启动扩展方法；
 
 @EasyLaunch(
         nickName = "CustomFuncName",
